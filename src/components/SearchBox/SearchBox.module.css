@@ -1,10 +1,22 @@
 .input {
-  width: 300px;
-  height: 25px;
-  padding: 2px 8px;
   border: 1px solid black;
-  padding: 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: transparent;
+  border-radius: 7px;
+  padding: 4px 10px;
+  outline: none;
+  min-width: 250px;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.label {
+  margin-bottom: 2px;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
 }

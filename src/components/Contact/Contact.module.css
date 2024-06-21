@@ -1,25 +1,31 @@
-.container {
+.number,
+.name {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-.contact {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.btn {
-  font-size: 14px;
-  padding: 2px 8px;
-  cursor: pointer;
-  width: 80px;
-  height: 30px;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.name {
+  margin-bottom: 8px;
+}
+
+.btn {
+  display: grid;
+  place-items: center;
+
+  margin-left: auto;
+  height: 31px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid black;
+  cursor: pointer;
+
+  background-color: rgb(89, 24, 77);
+  color: white;
+  border: transparent;
+  outline: none;
+}
+
+.btn:hover {
+  background-color: rgb(89, 24, 77);
 }

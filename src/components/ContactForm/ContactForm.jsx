@@ -1,92 +1,73 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useId } from "react";
-import * as Yup from "yup";
-import { addContact } from "../../redux/contacts/operations";
-import Button from "../Button/Button";
-import css from "./ContactForm.module.css";
 import { useDispatch } from "react-redux";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { addContact } from "../../redux/contacts/operations";
+import * as Yup from "yup";
+import css from "./ContactForm.module.css";
 import toast from "react-hot-toast";
 
-export default function ContactForm() {
-  const phoneRegExp = /^\d{3}-\d{2}-\d{2}$/;
-  const ContactFormSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(3, "Too Short!")
-      .max(50, "Too Long!")
-      .required("Required"),
-    number: Yup.string()
-      .matches(phoneRegExp, "Must be a valid number ххх-хх-хх!")
-      .required("Required"),
+const UserSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(3, "Too short")
+    .max(50, "Too long")
+    .required("This field is required"),
+  number: Yup.string()
+    .matches(/^\d{3}-\d{2}-\d{2}$/, "Invalid number format")
+    .required("This field is required"),
+});
+
+const initialValues = {
+  name: "",
+  number: "",
+};
+
+export default function ContactEditor() {
+  const dispatch = useDispatch();
+  const [parent] = useAutoAnimate({
+    easing: "linear",
+    duration: 300,
   });
 
-  const nameFieldId = useId();
-  const numberFieldId = useId();
+  const handleSubmit = (values, actions) => {
+    dispatch(addContact(values))
+      .unwrap()
+      .then(() => {
+        toast.success("Contact successfully added.", {
+          icon: "✍️",
+        });
 
-  const dispatch = useDispatch();
+        actions.resetForm();
+      })
+      .catch((error) => {
+        console.error("Failed to add contact:", error.message);
+      });
+  };
 
   return (
     <Formik
-      initialValues={{
-        name: "",
-        number: "",
-      }}
-      onSubmit={(values, actions) => {
-        const newContact = {
-          name: values.name,
-          number: values.number,
-        };
-        dispatch(addContact(newContact))
-          .then(() => {
-            toast.success("Contact added!");
-          })
-          .catch(() => {
-            toast.error("Contact not added!! Please try again!");
-          });
-        actions.resetForm();
-      }}
-      validationSchema={ContactFormSchema}
+      initialValues={initialValues}
+      validationSchema={UserSchema}
+      onSubmit={handleSubmit}
     >
       <Form className={css.form}>
-        <h2 className={css.title}>Add contact</h2>
-        <div className={css.container}>
-          <div className={css.form_input_container}>
-            <label className={css.form_input_title} htmlFor={nameFieldId}>
-              Name
-            </label>
-            <Field
-              className={css.form_input}
-              type="text"
-              name="name"
-              id={nameFieldId}
-            />
-            <ErrorMessage
-              className={css.form_error}
-              name="name"
-              component="span"
-            />
-          </div>
-
-          <div className={css.form_input_container}>
-            <label className={css.form_input_title} htmlFor={numberFieldId}>
-              Number
-            </label>
-            <Field
-              className={css.form_input}
-              type="tel"
-              name="number"
-              id={numberFieldId}
-            />
-            <ErrorMessage
-              className={css.form_error}
-              name="number"
-              component="span"
-            />
-          </div>
+        <div ref={parent} className={css.wrapper}>
+          <label htmlFor="name">Name</label>
+          <Field className={css.input} type="text" name="name" />
+          <ErrorMessage className={css.error} name="name" component="span" />
         </div>
-
-        <Button type="submit" style={{ width: "100%" }}>
+        <div ref={parent} className={css.wrapper}>
+          <label htmlFor="number">Number</label>
+          <Field
+            className={css.input}
+            type="text"
+            name="number"
+            placeholder="XXX-XX-XX"
+          />
+          <ErrorMessage className={css.error} name="number" component="span" />
+        </div>
+        <button className={css.formButton} type="submit">
           Add contact
-        </Button>
+        </button>
       </Form>
     </Formik>
   );

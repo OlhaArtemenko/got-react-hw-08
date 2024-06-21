@@ -1,116 +1,81 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useId } from "react";
-import * as Yup from "yup";
-import { register } from "../../redux/auth/operations";
-import Button from "../Button/Button";
-import css from "./RegistrationForm.module.css";
 import { useDispatch } from "react-redux";
+import { register } from "../../redux/auth/operations";
+import * as Yup from "yup";
+import css from "./RegistrationForm.module.css";
 import toast from "react-hot-toast";
 
+const RegistrationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(3, "Too short")
+    .max(50, "Too long")
+    .required("This field is required"),
+  email: Yup.string().email("Invalid email").required("This field is required"),
+  password: Yup.string().min(6, "Too short").required("This field is required"),
+});
+
+const initialValues = {
+  name: "",
+  email: "",
+  password: "",
+};
+
 export default function RegistrationForm() {
-  const RegistrationFormSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(3, "Too Short!")
-      .max(50, "Too Long!")
-      .required("Required"),
-    email: Yup.string().email("Must be a valid email!").required("Required"),
-    password: Yup.string()
-      .min(8, "Password must be at least 8 characters")
-      .matches(/[a-z]/, "Password must contain at least one lowercase char")
-      .matches(/[A-Z]/, "Password must contain at least one uppercase char")
-      .matches(
-        /[a-zA-Z]+[^a-zA-Z\s]+/,
-        "at least 1 number or special char (@,!,#, etc)."
-      )
-      .required("Required"),
-  });
-
-  const nameFieldId = useId();
-  const emailFieldId = useId();
-  const passwordFieldId = useId();
-
   const dispatch = useDispatch();
+
+  const handleSubmit = (values, actions) => {
+    dispatch(register(values))
+      .unwrap()
+      .then(() => {
+        toast.success("You have successfully registered!");
+        actions.resetForm();
+      })
+      .catch((error) => {
+        toast.error("Something went wrong, please try again.");
+        console.error("Registration failed:", error.message);
+      });
+  };
 
   return (
     <Formik
-      initialValues={{
-        name: "",
-        email: "",
-        password: "",
-      }}
-      onSubmit={(values, actions) => {
-        const registerInfo = {
-          name: values.name,
-          email: values.email,
-          password: values.password,
-        };
-        dispatch(register(registerInfo))
-          .unwrap()
-          .then(() => {
-            toast.success("Registration successful!");
-          })
-          .catch(() => {
-            toast.error("Registration error! Please try again!");
-          });
-        actions.resetForm();
-      }}
-      validationSchema={RegistrationFormSchema}
+      initialValues={initialValues}
+      validationSchema={RegistrationSchema}
+      onSubmit={handleSubmit}
     >
-      <Form className={css.form}>
-        <div className={css.form_input_container}>
-          <label className={css.form_input_title} htmlFor={nameFieldId}>
-            Name
-          </label>
+      <Form className={css.form} autoComplete="off">
+        <div className={css.inputWrapper}>
+          <label htmlFor="name">Username</label>
           <Field
-            className={css.form_input}
+            className={css.input}
             type="text"
             name="name"
-            id={nameFieldId}
+            id="name"
+            autoFocus
           />
-          <ErrorMessage
-            className={css.form_error}
-            name="name"
-            component="span"
-          />
+          <ErrorMessage className={css.error} name="name" component="span" />
         </div>
-
-        <div className={css.form_input_container}>
-          <label className={css.form_input_title} htmlFor={emailFieldId}>
-            Email
-          </label>
-          <Field
-            className={css.form_input}
-            type="email"
-            name="email"
-            id={emailFieldId}
-          />
-          <ErrorMessage
-            className={css.form_error}
-            name="email"
-            component="span"
-          />
+        <div className={css.inputWrapper}>
+          <label htmlFor="email">Email</label>
+          <Field className={css.input} type="email" name="email" id="email" />
+          <ErrorMessage className={css.error} name="email" component="span" />
         </div>
-
-        <div className={css.form_input_container}>
-          <label className={css.form_input_title} htmlFor={passwordFieldId}>
-            Password
-          </label>
+        <div className={css.inputWrapper}>
+          <label htmlFor="password">Password</label>
           <Field
-            className={css.form_input}
+            className={css.input}
             type="password"
             name="password"
-            id={passwordFieldId}
+            id="password"
           />
           <ErrorMessage
-            className={css.form_error}
+            className={css.error}
             name="password"
             component="span"
           />
         </div>
-
-        <Button type="submit" style={{ width: "100%", marginTop: 24 }}>
-          Registration
-        </Button>
+        <button className={css.btn} type="submit">
+          Register
+        </button>
       </Form>
     </Formik>
   );

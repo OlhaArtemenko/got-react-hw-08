@@ -1,11 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { logOut } from "../../redux/auth/operations";
 import { selectUser } from "../../redux/auth/selectors";
+import { logOut } from "../../redux/auth/operations";
+import { toast } from "react-hot-toast";
 import css from "./UserMenu.module.css";
-import Button from "../Button/Button";
-import toast from "react-hot-toast";
 
-const UserMenu = () => {
+export default function UserMenu() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
 
@@ -13,21 +12,22 @@ const UserMenu = () => {
     dispatch(logOut())
       .unwrap()
       .then(() => {
-        toast.success("Logout successful!");
+        toast.success("Good luck! See ya later.", {
+          icon: "👋",
+        });
       })
-      .catch((e) => {
-        console.log(e.message);
-        toast.error("Logout failed!");
+      .catch((error) => {
+        toast.error("Logout failed. Please try again.");
+        console.log(error.message);
       });
   };
 
   return (
     <div className={css.wrapper}>
-      <p className={css.username}>Welcome, {user.name}</p>
-      <Button type="button" onClick={handleLogout}>
+      <p className={css.text}>Welcome, {user.name} 🙂</p>
+      <button className={css.btn} type="button" onClick={handleLogout}>
         Logout
-      </Button>
+      </button>
     </div>
   );
-};
-export default UserMenu;
+}

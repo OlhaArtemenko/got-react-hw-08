@@ -1,25 +1,19 @@
-import { useEffect, useState } from "react";
+import { MagnifyingGlass } from "react-loader-spinner";
 import css from "./Loader.module.css";
 
-const Loader = () => {
-  const [timeLeft, setTimeLeft] = useState(20);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 20));
-    }, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
+export default function Loader() {
   return (
-    <div className={css.container}>
-      <div className={css.spinner}></div>
-      <p className={css.text}>
-        Left time: {timeLeft} {timeLeft > 1 ? "seconds" : "second"}
-      </p>
+    <div className={css.loader}>
+      <MagnifyingGlass
+        visible={true}
+        height="80"
+        width="80"
+        ariaLabel="magnifying-glass-loading"
+        wrapperStyle={{}}
+        wrapperClass="magnifying-glass-wrapper"
+        glassColor="#c0efff"
+        color="#e15b64"
+      />
     </div>
   );
-};
-
-export default Loader;
+}

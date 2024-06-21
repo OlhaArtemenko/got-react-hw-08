@@ -1,12 +1,11 @@
-import DocumentTitle from "../../components/DocumentTitle/DocumentTitle";
 import RegistrationForm from "../../components/RegistrationForm/RegistrationForm";
-import Layout from "../../components/Layout/Layout";
+import css from "./RegistrationPage.module.css";
 
 export default function RegisterPage() {
   return (
-    <Layout>
-      <DocumentTitle>Registration</DocumentTitle>
+    <div>
+      <p className={css.title}>Register your account</p>
       <RegistrationForm />
-    </Layout>
+    </div>
   );
 }

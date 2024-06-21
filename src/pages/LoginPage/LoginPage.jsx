@@ -1,12 +1,11 @@
-import DocumentTitle from "../../components/DocumentTitle/DocumentTitle";
 import LoginForm from "../../components/LoginForm/LoginForm";
-import Layout from "../../components/Layout/Layout";
+import css from "./LoginPage.module.css";
 
 export default function LoginPage() {
   return (
-    <Layout>
-      <DocumentTitle>Login</DocumentTitle>
+    <div>
+      <p className={css.title}>Please log in</p>
       <LoginForm />
-    </Layout>
+    </div>
   );
 }

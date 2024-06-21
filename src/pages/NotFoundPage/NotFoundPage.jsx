@@ -1,16 +1,13 @@
-import Layout from "../../components/Layout/Layout";
-import css from "./NotFoundPage.module.css";
 import { Link } from "react-router-dom";
+import css from "./NotFoundPage.module.css";
 
-export default function NotFoundPage({ children }) {
+export default function NotFoundPage() {
   return (
-    <Layout>
-      <p className={css.error}>
-        {children} Please go to{" "}
-        <Link to="/" className={css.link}>
-          Home page
-        </Link>
+    <div className={css.wrapper}>
+      <p>Sorry, but the page was not found.</p>
+      <p>
+        <Link to="/">Go Back!</Link>
       </p>
-    </Layout>
+    </div>
   );
 }

@@ -1,27 +1,20 @@
-import css from "./ContactList.module.css";
-import Contact from "../Contact/Contact";
 import { useSelector } from "react-redux";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { selectFilteredContacts } from "../../redux/contacts/selectors";
+import Contact from "../Contact/Contact";
+import css from "./ContactList.module.css";
 
 export default function ContactList() {
-  const visibleContacts = useSelector(selectFilteredContacts);
+  const [parent] = useAutoAnimate({ easing: "linear", duration: 300 });
+  const filteredContacts = useSelector(selectFilteredContacts);
 
   return (
-    <>
-      <h2 className={css.title}>Contact list</h2>
-      <ul className={css.contactlist}>
-        {visibleContacts.map((contact) => {
-          return (
-            <li key={contact.id} className={css.contactlist_item}>
-              <Contact
-                name={contact.name}
-                number={contact.number}
-                id={contact.id}
-              />
-            </li>
-          );
-        })}
-      </ul>
-    </>
+    <ul ref={parent} className={css.list}>
+      {filteredContacts.map((contact) => (
+        <li className={css.item} key={contact.id}>
+          <Contact {...contact} />
+        </li>
+      ))}
+    </ul>
   );
 }

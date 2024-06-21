@@ -1,93 +1,63 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useId } from "react";
-import * as Yup from "yup";
-import { logIn } from "../../redux/auth/operations";
-import Button from "../Button/Button";
-import css from "./LoginForm.module.css";
 import { useDispatch } from "react-redux";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { logIn } from "../../redux/auth/operations";
+import * as Yup from "yup";
+import css from "./LoginForm.module.css";
+
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("This field is required"),
+  password: Yup.string().min(6, "Too short").required("This field is required"),
+});
+
+const initialValues = {
+  email: "",
+  password: "",
+};
 
 export default function LoginForm() {
-  const LoginFormSchema = Yup.object().shape({
-    email: Yup.string().email("Must be a valid email!").required("Required"),
-    password: Yup.string()
-      .min(8, "Password must be at least 8 characters")
-      .matches(/[a-z]/, "Password must contain at least one lowercase char")
-      .matches(/[A-Z]/, "Password must contain at least one uppercase char")
-      .matches(
-        /[a-zA-Z]+[^a-zA-Z\s]+/,
-        "at least 1 number or special char (@,!,#, etc)."
-      )
-      .required("Required"),
-  });
-
-  const emailFieldId = useId();
-  const passwordFieldId = useId();
-
   const dispatch = useDispatch();
+
+  const handleSubmit = (values, actions) => {
+    dispatch(logIn(values))
+      .unwrap()
+      .then(() => {
+        toast.success("Welcome back!");
+      })
+      .catch((error) => {
+        toast.error(
+          "You have entered an incorrect email or password, please try again."
+        );
+        console.log(error.message);
+      });
+
+    actions.resetForm();
+  };
 
   return (
     <Formik
-      initialValues={{
-        email: "",
-        password: "",
-      }}
-      onSubmit={(values, actions) => {
-        const LogInInfo = {
-          email: values.email,
-          password: values.password,
-        };
-        dispatch(logIn(LogInInfo))
-          .unwrap()
-          .then(() => {
-            toast.success("Login successful!");
-          })
-          .catch((e) => {
-            console.log(e.message);
-            toast.error("Login error! Please try again!");
-          });
-        actions.resetForm();
-      }}
-      validationSchema={LoginFormSchema}
+      initialValues={initialValues}
+      validationSchema={LoginSchema}
+      onSubmit={handleSubmit}
     >
       <Form className={css.form} autoComplete="off">
-        <div className={css.form_input_container}>
-          <label className={css.form_input_title} htmlFor={emailFieldId}>
-            Email
-          </label>
-          <Field
-            className={css.form_input}
-            type="email"
-            name="email"
-            id={emailFieldId}
-          />
-          <ErrorMessage
-            className={css.form_error}
-            name="email"
-            component="span"
-          />
+        <div className={css.inputWrapper}>
+          <label className={css.label}>Email</label>
+          <Field className={css.input} type="email" name="email" autoFocus />
+          <ErrorMessage className={css.error} name="email" component="span" />
         </div>
-
-        <div className={css.form_input_container}>
-          <label className={css.form_input_title} htmlFor={passwordFieldId}>
-            Password
-          </label>
-          <Field
-            className={css.form_input}
-            type="password"
-            name="password"
-            id={passwordFieldId}
-          />
+        <div className={css.inputWrapper}>
+          <label className={css.label}>Password</label>
+          <Field className={css.input} type="password" name="password" />
           <ErrorMessage
-            className={css.form_error}
+            className={css.error}
             name="password"
             component="span"
           />
         </div>
-
-        <Button type="submit" style={{ width: "100%", marginTop: 24 }}>
-          Log in
-        </Button>
+        <button className={css.btn} type="submit">
+          Log In
+        </button>
       </Form>
     </Formik>
   );
